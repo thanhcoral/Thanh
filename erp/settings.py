@@ -125,3 +125,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # User settings
 ######################################################################
 
+INSTALLED_APPS += [
+    'user',
+]
+
+AUTH_USER_MODEL = 'user.User'
