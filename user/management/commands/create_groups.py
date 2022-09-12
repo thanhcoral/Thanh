@@ -3,8 +3,8 @@ import logging
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group
 
+from common.authorization import GROUPS
 
-GROUPS = ['System Admin', 'Sub Admin', 'HR', ]
 
 class Command(BaseCommand):
     help = 'Creates read only default permission groups for users'
