@@ -153,7 +153,8 @@ def checkin(request):
     day = datee.day
     # TimeSheet.objects.create(user=request.user)
     timesheet = TimeSheet.objects.get_or_create(user=request.user, year=year, month=month, day=day)
-    timesheet.checkin = timezone.now()
+    # timesheet.checkin = str(timezone.now())
+    # print(colored(timezone.now(), 'blue'))
     return redirect('/timesheet')
 
 @login_required
