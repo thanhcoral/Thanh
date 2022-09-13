@@ -27,7 +27,9 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
               <div class="navbar-nav ml-auto">
                 {% if user.is_authenticated %}
-                  <a href="#" class="nav-item nav-link">Profile</a>
+                <a href="{% url 'users-list' %}" class="nav-item nav-link">Users</a>
+                <span class="mx-4 my-auto">||</span>
+                  <a href="#" class="nav-item nav-link">{{user.username}}</a>
                   <a href="{% url 'logout' %}" class="nav-item nav-link">Logout</a>
                 {% else %}
                   <a href="{% url 'login' %}" class="nav-item nav-link">Sign in</a>

@@ -1,11 +1,18 @@
 from django.shortcuts import render, redirect
 from django.views import View
+from django.views.generic import ListView
 from django.contrib import messages
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
+from termcolor import colored
 
-from users.forms import RegisterForm, LoginForm
+from users.forms import RegisterForm, LoginForm, AddUserForm
+from users.models import User
 
+from common.authorization import group_required, lv
 
+@login_required
 def home(request):
     return render(request, 'users/home.html')
 
@@ -55,3 +62,58 @@ class CustomLoginView(LoginView):
 
         # else browser session will be as long as the session cookie time "SESSION_COOKIE_AGE" defined in settings.py
         return super(CustomLoginView, self).form_valid(form)
+
+
+@group_required('Sub Admin', 'HR', raise_exception=True)
+def user_list(request):
+    users = User.objects.all()
+    context = {
+        'users': users
+    }
+    return render(request, 'users/users-list.html', context)
+
+
+@group_required('Sub Admin', 'HR', raise_exception=True)
+def add_user(request):
+    form = AddUserForm(request.POST or None)
+    users = User.objects.all()
+    context = {
+        'form': form,
+    }
+    if request.method == 'POST':
+        if form.is_valid():
+            recent_group = request.user.groups.first().name
+            request_group = form.cleaned_data.get('groups')
+            print(colored(request_group, 'blue'))
+            if lv(recent_group) >= lv(request_group):
+                messages.warning(request, "You do not have permission add user at position:" + recent_group)
+                context = {
+                    'form': form,
+                }
+                return render(request, 'users/users-add.html', context)
+
+            user = form.save()
+            group = Group.objects.get(name=request_group)
+            user.groups.add(group)
+            messages.success(request, "Succesful")
+            return redirect('/users')
+        else:
+            print(colored('form is not valid', 'red'))
+    
+    return render(request, 'users/users-add.html', context)
+
+
+@group_required('Sub Admin', raise_exception=True)
+def delete_user(request, pk):
+    users = User.objects.all()
+    try:
+        user = User.objects.get(id=pk)
+    except:
+        messages.warning(request, "User not exist")
+        context = {
+            'users': users,
+        }
+        return render(request, 'users/users-list.html', context)
+    User.objects.filter(id=pk).delete()
+    messages.success(request, "Delete successfully")
+    return redirect('/users')
