@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, UserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
@@ -42,17 +44,27 @@ class Profile(models.Model):
     gender = models.CharField(_("gender"), max_length=100, blank=True, choices=GENDER_CHOICES)
     address = models.CharField(_("address"), max_length=100, blank=True)
     birthday = models.DateField(_("birthday"), max_length=10, blank=True, null=True)
+
     def __str__(self):
         return f"Profile of {self.user.username}"
 
 
 class TimeSheet(models.Model):
-    date = models.DateField(_("date"), default=timezone.now)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    year = models.IntegerField(blank=True, null=True)
+    month = models.IntegerField(blank=True, null=True)
+    day = models.IntegerField(blank=True, null=True)
     checkin = models.DateTimeField(_("check in"), default=timezone.now)
-    checkout = models.DateTimeField(_("check out"), null=True, blank=True)
+    checkout = models.DateTimeField(_("check out"), blank=True, null=True)
     
-    time = models.IntegerField()
+    time = models.IntegerField(blank=True, null=True)
 
-    # def save(self, *args, **kwargs):
-    #     self.time = 3 + 4
-    #     return super().save()
+    def __str__(self):
+        return f"timesheet of user: {self.user.username}"
+
+    def save(self, *args, **kwargs):
+        datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+        self.year = datee.year
+        self.month = datee.month
+        self.day = datee.day
+        return super().save(*args, **kwargs)

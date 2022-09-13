@@ -1,4 +1,5 @@
 from time import strftime, gmtime
+import datetime
 
 from django.utils import timezone
 from django.shortcuts import render, redirect
@@ -144,17 +145,23 @@ def profile(request, pk):
 def timesheet(request):
     return render(request, 'users/timesheet.html')
 
+@login_required
 def checkin(request):
-    TimeSheet.objects.create()
-    a = TimeSheet.objects.first()
-    a.checkin = timezone.now()
+    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+    year = datee.year
+    month = datee.month
+    day = datee.day
+    # TimeSheet.objects.create(user=request.user)
+    timesheet = TimeSheet.objects.get_or_create(user=request.user, year=year, month=month, day=day)
+    timesheet.checkin = timezone.now()
     return redirect('/timesheet')
 
+@login_required
 def checkout(request):
-    a = TimeSheet.objects.first()
-    a.checkout = timezone.now()
-    a.time = (a.checkout - a.checkin).seconds
-    a.save()
+    timesheet = TimeSheet.objects.get(user=request.user)
+    timesheet.checkout = timezone.now()
+    timesheet.time = (timesheet.checkout - timesheet.checkin).seconds
+    timesheet.save()
     # print( strftime("%H:%M:%S", gmtime(a.time)) )
     return redirect('/timesheet')
 
