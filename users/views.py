@@ -1,3 +1,6 @@
+from time import strftime, gmtime
+
+from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import ListView
@@ -8,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from termcolor import colored
 
 from users.forms import RegisterForm, LoginForm, AddUserForm, UpdateProfileForm, UpdateUserForm
-from users.models import User
+from users.models import TimeSheet, User
 
 from common.authorization import group_required, lv
 
@@ -138,7 +141,22 @@ def profile(request, pk):
     return render(request, 'users/profile.html', {'target_user': target_user, 'user_form': user_form, 'profile_form': profile_form})
 
 
+def timesheet(request):
+    return render(request, 'timesheet.html')
 
+def checkin(request):
+    TimeSheet.objects.create()
+    a = TimeSheet.objects.first()
+    a.checkin = timezone.now()
+    return redirect('/timesheet')
+
+def checkout(request):
+    a = TimeSheet.objects.first()
+    a.checkout = timezone.now()
+    a.time = (a.checkout - a.checkin).seconds
+    a.save()
+    # print( strftime("%H:%M:%S", gmtime(a.time)) )
+    return redirect('/timesheet')
 
 
 

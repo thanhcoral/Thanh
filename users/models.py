@@ -44,3 +44,15 @@ class Profile(models.Model):
     birthday = models.DateField(_("birthday"), max_length=10, blank=True, null=True)
     def __str__(self):
         return f"Profile of {self.user.username}"
+
+
+class TimeSheet(models.Model):
+    date = models.DateField(_("date"), default=timezone.now)
+    checkin = models.DateTimeField(_("check in"), default=timezone.now)
+    checkout = models.DateTimeField(_("check out"), null=True, blank=True)
+    
+    time = models.IntegerField()
+
+    # def save(self, *args, **kwargs):
+    #     self.time = 3 + 4
+    #     return super().save()

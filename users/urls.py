@@ -16,4 +16,10 @@ urlpatterns = [
     path('users/add', views.add_user, name='users-add'),
     path('users/delete/<int:pk>', views.delete_user, name='users-delete'),
     path('users/edit/<int:pk>', views.profile, name='users-edit'),
+
+
+
+    path('timesheet', views.timesheet, name='timesheet'),
+    path('timesheet/checkin', views.checkin, name='checkin'),
+    path('timesheet/checkout', views.checkout, name='checkout'),
 ]
