@@ -142,7 +142,7 @@ def profile(request, pk):
 
 
 def timesheet(request):
-    return render(request, 'timesheet.html')
+    return render(request, 'users/timesheet.html')
 
 def checkin(request):
     TimeSheet.objects.create()
