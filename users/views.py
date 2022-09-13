@@ -120,21 +120,22 @@ def delete_user(request, pk):
 
 
 @login_required
-def profile(request):
+def profile(request, pk):
+    target_user = User.objects.get(id=pk)
     if request.method == 'POST':
-        user_form = UpdateUserForm(request.POST, instance=request.user)
-        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        user_form = UpdateUserForm(request.POST, instance=target_user)
+        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=target_user.profile)
 
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
             messages.success(request, 'Your profile is updated successfully')
-            return redirect(to='users-edit')
+            return redirect(f"/users/edit/{pk}")
     else:
-        user_form = UpdateUserForm(instance=request.user)
-        profile_form = UpdateProfileForm(instance=request.user.profile)
+        user_form = UpdateUserForm(instance=target_user)
+        profile_form = UpdateProfileForm(instance=target_user.profile)
 
-    return render(request, 'users/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+    return render(request, 'users/profile.html', {'target_user': target_user, 'user_form': user_form, 'profile_form': profile_form})
 
 
 
