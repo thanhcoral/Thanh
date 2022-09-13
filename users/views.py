@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 from termcolor import colored
 
-from users.forms import RegisterForm, LoginForm, AddUserForm
+from users.forms import RegisterForm, LoginForm, AddUserForm, UpdateProfileForm, UpdateUserForm
 from users.models import User
 
 from common.authorization import group_required, lv
@@ -117,3 +117,28 @@ def delete_user(request, pk):
     User.objects.filter(id=pk).delete()
     messages.success(request, "Delete successfully")
     return redirect('/users')
+
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        user_form = UpdateUserForm(request.POST, instance=request.user)
+        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, 'Your profile is updated successfully')
+            return redirect(to='users-edit')
+    else:
+        user_form = UpdateUserForm(instance=request.user)
+        profile_form = UpdateProfileForm(instance=request.user.profile)
+
+    return render(request, 'users/profile.html', {'user_form': user_form, 'profile_form': profile_form})
+
+
+
+
+
+
+
