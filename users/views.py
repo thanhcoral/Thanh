@@ -143,7 +143,7 @@ def profile(request, pk):
 
     return render(request, 'users/profile.html', {'target_user': target_user, 'user_form': user_form, 'profile_form': profile_form})
 
-
+@login_required
 def timesheet(request):
     datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
     year = datee.year
@@ -155,13 +155,17 @@ def timesheet(request):
     for i in range(1, a[1]+1):
         try:
             list = TimeSheet.objects.get(user=request.user, day=i)
+            if list.checkout is not None:
+                checkout = list.checkout.time
+            else:
+                checkout = ''
             t.append(
                 {
                     'day' : i, 
                     'month': month, 
                     'year': year, 
                     'checkin': list.checkin.time,
-                    'checkout': list.checkout.time, 
+                    'checkout': checkout, 
                     'time': strftime("%H:%M", gmtime(list.time)),
                 }
             )
@@ -201,7 +205,11 @@ def checkout(request):
     year = datee.year
     month = datee.month
     day = datee.day
-    timesheet = TimeSheet.objects.get(user=request.user, year=year, month=month, day=day)
+    try:
+        timesheet = TimeSheet.objects.get(user=request.user, year=year, month=month, day=day)
+    except:
+        messages.warning(request, 'checkin before')
+        return redirect('/timesheet')
     timesheet.checkout = timezone.now()
     timesheet.time = (timesheet.checkout - timesheet.checkin).seconds
     timesheet.save()
