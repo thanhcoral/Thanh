@@ -145,7 +145,7 @@ def profile(request, pk):
 
 
 def timesheet(request):
-    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
     year = datee.year
     month = datee.month
 
@@ -160,8 +160,8 @@ def timesheet(request):
                     'day' : i, 
                     'month': month, 
                     'year': year, 
-                    'checkout': list.checkout, 
-                    'checkin': list.checkin,
+                    'checkin': list.checkin.time,
+                    'checkout': list.checkout.time, 
                     'time': strftime("%H:%M", gmtime(list.time)),
                 }
             )
@@ -176,7 +176,7 @@ def timesheet(request):
                     'time': 0,
                 }
             )
-    print(t)
+    # print(t)
 
     context = {
         't': t,
@@ -185,7 +185,7 @@ def timesheet(request):
 
 @login_required
 def checkin(request):
-    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
     year = datee.year
     month = datee.month
     day = datee.day
@@ -197,7 +197,7 @@ def checkin(request):
 
 @login_required
 def checkout(request):
-    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
     year = datee.year
     month = datee.month
     day = datee.day
@@ -205,7 +205,7 @@ def checkout(request):
     timesheet.checkout = timezone.now()
     timesheet.time = (timesheet.checkout - timesheet.checkin).seconds
     timesheet.save()
-    # print( strftime("%H:%M:%S", gmtime(a.time)) )
+    print( strftime("%H:%M:%S", gmtime(timesheet.time)) )
     return redirect('/timesheet')
 
 

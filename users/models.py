@@ -51,20 +51,20 @@ class Profile(models.Model):
 
 class TimeSheet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    
+
     year = models.IntegerField(blank=True, null=True)
     month = models.IntegerField(blank=True, null=True)
     day = models.IntegerField(blank=True, null=True)
-    checkin = models.DateTimeField(_("check in"), default=timezone.now)
+    checkin = models.DateTimeField(_("check in"), default=timezone.now())
     checkout = models.DateTimeField(_("check out"), blank=True, null=True)
     
-    time = models.IntegerField(blank=True, null=True)
+    time = models.IntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
         return f"timesheet of user: {self.user.username} at {self.day}-{self.month}-{self.year}"
 
     def save(self, *args, **kwargs):
-        datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+        datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
         self.year = datee.year
         self.month = datee.month
         self.day = datee.day
