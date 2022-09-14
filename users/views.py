@@ -301,3 +301,39 @@ def manage_timesheet(request):
     }
 
     return render (request, 'users/manage-timesheet.html', context)
+
+
+# importing the necessary libraries
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa  
+
+# defining the function to convert an HTML file to a PDF file
+def html_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html  = template.render(context_dict)
+    # print(html)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+# importing the necessary libraries
+from django.http import HttpResponse
+from django.views.generic import View
+from users import models
+from django.template.loader import render_to_string
+
+#Creating a class based view
+class GeneratePdf(View):
+     def get(self, request, *args, **kwargs):
+        data = models.User.objects.all().order_by('first_name')
+        open('temp.html', "w").write(render_to_string('result.html', {'data': data}))
+
+        # Converting the HTML template into a PDF file
+        pdf = html_to_pdf('temp.html')
+         
+         # rendering the template
+        return HttpResponse(pdf, content_type='application/pdf')

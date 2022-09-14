@@ -24,4 +24,6 @@ urlpatterns = [
     path('timesheet/checkout', views.checkout, name='checkout'),
     path('timesheet/salary/<int:pk>', views.export_salary, name='salary'),
     path('manage-timesheet', views.manage_timesheet, name='manage-timesheet'),
+
+    path('pdf/', views.GeneratePdf.as_view()), 
 ]
