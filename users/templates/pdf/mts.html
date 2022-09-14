@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Python Guides</title>
+    <style>
+        h1 {
+          text-align: center;
+        }
+        td, th {
+          text-align: center;
+        }
+      </style>
+</head>
+<body>
+    
+      <h1>List of Employees</h1>
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td style="font-family:Verdana, Geneva, sans-serif; font-weight:600; font-size:13px; border-top:1px solid #333; border-bottom:1px solid #333; border-left:1px solid #333; border-right:1px solid #333;" width="5%" height="32" align="center">no</td>
+          <td style="font-family:Verdana, Geneva, sans-serif; font-weight:600; font-size:13px; border-top:1px solid #333; border-bottom:1px solid #333; border-right:1px solid #333;" width="5%" align="center">user</td>
+          {% for time in data.timeline %}
+            {% comment %} <td> {{time.day}} </td> {% endcomment %}
+            <td style="font-family:Verdana, Geneva, sans-serif; font-weight:600; font-size:13px; border-top:1px solid #333; border-bottom:1px solid #333; border-right:1px solid #333;" width="3%" align="center">{{time.day}}</td>
+          {% endfor %}
+        </tr>
+        {% for item in data.all_timeline %}
+        <tr>
+            <td style="font-family:Verdana, Geneva, sans-serif; font-weight:300; font-size:13px; border-bottom:1px solid #333; border-right:1px solid #333; border-left:1px solid #333;" align="center">{{item.user.id}}</td>
+            <td style="font-family:Verdana, Geneva, sans-serif; font-weight:300; font-size:13px; border-bottom:1px solid #333; border-right:1px solid #333;" align="center">{{item.user.username}}</td>
+            {% comment %} <td> {{item.user.id}} </td> {% endcomment %}
+            {% comment %} <td> {{item.user.username}} </td> {% endcomment %}
+            {% for timeline in item.timeline %}
+            <td style="font-family:Verdana, Geneva, sans-serif; font-weight:300; font-size:13px; border-bottom:1px solid #333; border-right:1px solid #333;" align="center">{{timeline.w_time}}</td>
+            {% comment %} <td style="width: 10px;"> {{timeline.w_time}} </td> {% endcomment %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        {% comment %} <tr>
+          <td style="font-family:Verdana, Geneva, sans-serif; font-weight:300; font-size:13px; border-bottom:1px solid #333; border-left:1px solid #333; border-right:1px solid #333;" height="32" align="center">{{data.description}}</td>
+          <td style="font-family:Verdana, Geneva, sans-serif; font-weight:300; font-size:13px; border-bottom:1px solid #333; border-right:1px solid #333;" align="center">{{data.amount}}</td>
+          <td style="font-family:Verdana, Geneva, sans-serif; font-weight:300; font-size:13px; border-bottom:1px solid #333; border-right:1px solid #333;" align="center">{{data.pay_method}}</td>
+        </tr> {% endcomment %}
+      </table>
+
+</body>
+</html>

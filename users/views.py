@@ -327,13 +327,78 @@ from users import models
 from django.template.loader import render_to_string
 
 #Creating a class based view
+# class GeneratePdf(View):
+#      def get(self, request, *args, **kwargs):
+#         data = models.User.objects.all()
+#         open('users/templates/temp.html', "w").write(render_to_string('result.html', {'data': data}))
+
+#         # Converting the HTML template into a PDF file
+#         pdf = html_to_pdf('temp.html')
+         
+#          # rendering the template
+#         return HttpResponse(pdf, content_type='application/pdf')
+
+
 class GeneratePdf(View):
      def get(self, request, *args, **kwargs):
-        data = models.User.objects.all()
-        open('users/templates/temp.html', "w").write(render_to_string('result.html', {'data': data}))
+
+        datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
+        year = datee.year
+        month = datee.month
+        # day = datee.day
+
+        a = monthrange(year, month)
+
+        users = User.objects.all()
+
+        all_timeline = []
+
+        for user in users:
+            timeline = []
+            for day in range(1, a[1]+1):
+                try:
+                    timesheet = TimeSheet.objects.get(user=user, day=day, month=month)
+                    x = strftime("%H", gmtime(timesheet.time))
+                    y = strftime("%M", gmtime(timesheet.time))
+                    w_time = int(x) + round(int(y)/60, 1)
+                    # w_time = y
+                except:
+                    w_time = ''
+                timeline.append(
+                    {
+                        'day': day,
+                        'w_time': w_time
+                    }
+                )
+            all_timeline.append(
+                {
+                    'user': user,
+                    'timeline': timeline,
+                }
+            )
+
+        tl = []
+        for day in range(1, a[1]+1):
+            tl.append(
+                {
+                    'day': day,
+                }
+            )
+
+        data = {
+            'timeline': tl,
+            'all_timeline': all_timeline,
+            'users': User.objects.all()
+        }
+        # data = models.User.objects.all()
+        open('users/templates/temp.html', "w").write(render_to_string('pdf/mts.html', {'data': data}))
 
         # Converting the HTML template into a PDF file
         pdf = html_to_pdf('temp.html')
          
          # rendering the template
         return HttpResponse(pdf, content_type='application/pdf')
+
+
+
+
