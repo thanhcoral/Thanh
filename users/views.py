@@ -155,10 +155,10 @@ def timesheet(request):
     for i in range(1, a[1]+1):
         try:
             list = TimeSheet.objects.get(user=request.user, day=i)
-            if list.checkout is not None:
-                checkout = list.checkout.time
-            else:
-                checkout = ''
+            checkout = list.checkout.time if (list.checkout is not None) else ''
+            late = '' if (list.late == 0) else strftime("%H:%M", gmtime(list.late))
+            ot = '' if (list.ot == 0) else strftime("%H:%M", gmtime(list.ot))
+            
             t.append(
                 {
                     'day' : i, 
@@ -166,6 +166,8 @@ def timesheet(request):
                     'year': year, 
                     'checkin': list.checkin.time,
                     'checkout': checkout, 
+                    'late': late, 
+                    'ot': ot, 
                     'time': strftime("%H:%M", gmtime(list.time)),
                 }
             )
@@ -175,9 +177,6 @@ def timesheet(request):
                     'day' : i, 
                     'month': month, 
                     'year': year, 
-                    'checkout': 0, 
-                    'checkin': 0,
-                    'time': 0,
                 }
             )
     # print(t)
@@ -211,9 +210,24 @@ def checkout(request):
         messages.warning(request, 'checkin before')
         return redirect('/timesheet')
     timesheet.checkout = timezone.now()
-    timesheet.time = (timesheet.checkout - timesheet.checkin).seconds
+
+    # timesheet.checkin = datetime.datetime(2022,9,14,7,58,20,123456)
+    # timesheet.checkout = datetime.datetime(2022,9,14,18,14,25,123456)
+
+    checkin = timesheet.checkin
+    checkout = timesheet.checkout
+
+    if (checkin - datetime.datetime(2022,9,14,8,0,0,0)).days > 0 :
+        timesheet.late = (checkin - datetime.datetime(2022,9,14,8,0,0,0)).seconds
+
+    print((datetime.datetime(2022,9,14,17,0,0,0) - checkout))
+    if (datetime.datetime(2022,9,14,17,0,0,0) - checkout).days < 0:
+        timesheet.ot = (checkout - datetime.datetime(2022,9,14,17,0,0,0)).seconds
+
+    
+    timesheet.time = (checkout - checkin).seconds
     timesheet.save()
-    print( strftime("%H:%M:%S", gmtime(timesheet.time)) )
+    # print( strftime("%H:%M:%S", gmtime(timesheet.time)) )
     return redirect('/timesheet')
 
 

@@ -55,9 +55,11 @@ class TimeSheet(models.Model):
     year = models.IntegerField(blank=True, null=True)
     month = models.IntegerField(blank=True, null=True)
     day = models.IntegerField(blank=True, null=True)
-    checkin = models.DateTimeField(_("check in"), default=timezone.now())
+    checkin = models.DateTimeField(_("check in"), default=timezone.now)
     checkout = models.DateTimeField(_("check out"), blank=True, null=True)
-    
+
+    late = models.IntegerField(blank=True, null=True, default=0)
+    ot = models.IntegerField(blank=True, null=True, default=0)
     time = models.IntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
