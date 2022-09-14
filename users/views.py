@@ -329,8 +329,8 @@ from django.template.loader import render_to_string
 #Creating a class based view
 class GeneratePdf(View):
      def get(self, request, *args, **kwargs):
-        data = models.User.objects.all().order_by('first_name')
-        open('temp.html', "w").write(render_to_string('result.html', {'data': data}))
+        data = models.User.objects.all()
+        open('users/templates/temp.html', "w").write(render_to_string('result.html', {'data': data}))
 
         # Converting the HTML template into a PDF file
         pdf = html_to_pdf('temp.html')

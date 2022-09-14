@@ -20,19 +20,21 @@
       <table>
         <thead>
           <tr>
-            <th>Employee ID</th>
+            <th style="width: 50px;">Employee ID</th>
             <th>First Name</th>
-            <th>Last Name</th>
+            <th style="width: 100px;">Last Name</th>
+            <th>Department</th>
             <th>Department</th>
           </tr>
         </thead>
         <tbody>
-          {% for person in data %}
+          {% for user in data %}
             <tr>
-              <td>{{ person.id }}</td>
-              <td>{{ person.first_name }}</td>
-              <td>{{ person.last_name }}</td>
-              <td>{{ person.username }}</td>
+              <td>{{ user.id }}</td>
+              <td>{{ user.firstname }}</td>
+              <td>{{ user.profile.avatar.url }}</td>
+              <td>{{ user.profile.address }}</td>
+              <td>{{ user.username }}</td>
             </tr>
           {% endfor %}    
         </tbody>
