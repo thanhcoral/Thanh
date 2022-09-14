@@ -27,3 +27,4 @@ class UserAdmin(UserAdmin):
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Profile)
 admin.site.register(models.TimeSheet)
+admin.site.register(models.Salary)

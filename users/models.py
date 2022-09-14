@@ -71,3 +71,30 @@ class TimeSheet(models.Model):
         self.month = datee.month
         self.day = datee.day
         return super().save(*args, **kwargs)
+
+
+class Salary(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
+    month = models.IntegerField(blank=True, null=True)
+    w_time = models.IntegerField(blank=True, null=True)
+
+    salary = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return f"salary of user: {self.user.username} at month: {self.month}"
+
+    def save(self, *args, **kwarngs):
+        datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
+        self.month = datee.month
+        list = TimeSheet.objects.filter(user=self.user, month=self.month)
+        total = 0
+        for li in list:
+            total += (li.time)
+        self.w_time = total
+        self.salary = 1.0 * (total/3600/8*500000)
+        return super().save(*args, **kwarngs)
+
+
+
+

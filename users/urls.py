@@ -22,4 +22,5 @@ urlpatterns = [
     path('timesheet', views.timesheet, name='timesheet'),
     path('timesheet/checkin', views.checkin, name='checkin'),
     path('timesheet/checkout', views.checkout, name='checkout'),
+    path('timesheet/salary/<int:pk>', views.export_salary, name='salary'),
 ]

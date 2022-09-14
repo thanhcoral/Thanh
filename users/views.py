@@ -14,7 +14,7 @@ from django.contrib.auth.decorators import login_required
 from termcolor import colored
 
 from users.forms import RegisterForm, LoginForm, AddUserForm, UpdateProfileForm, UpdateUserForm
-from users.models import TimeSheet, User
+from users.models import Salary, TimeSheet, User
 
 from common.authorization import group_required, lv
 
@@ -181,8 +181,11 @@ def timesheet(request):
             )
     # print(t)
 
+    salary = Salary.objects.get(user=request.user, month=month)
+
     context = {
         't': t,
+        'salary': salary,
     }
     return render(request, 'users/timesheet.html', context)
 
@@ -220,16 +223,21 @@ def checkout(request):
     if (checkin - datetime.datetime(2022,9,14,8,0,0,0)).days > 0 :
         timesheet.late = (checkin - datetime.datetime(2022,9,14,8,0,0,0)).seconds
 
-    print((datetime.datetime(2022,9,14,17,0,0,0) - checkout))
     if (datetime.datetime(2022,9,14,17,0,0,0) - checkout).days < 0:
         timesheet.ot = (checkout - datetime.datetime(2022,9,14,17,0,0,0)).seconds
 
+    list = TimeSheet.objects.filter(user=request.user, month=9)
+    print(list)
     
     timesheet.time = (checkout - checkin).seconds
     timesheet.save()
     # print( strftime("%H:%M:%S", gmtime(timesheet.time)) )
     return redirect('/timesheet')
 
-
+def export_salary(request, pk):
+    user = User.objects.get(id=pk)
+    salary = Salary.objects.create(user=user)
+    print(salary)
+    return redirect('/timesheet')
 
 
