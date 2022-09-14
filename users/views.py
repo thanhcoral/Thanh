@@ -1,5 +1,7 @@
 from time import strftime, gmtime
 import datetime
+from calendar import monthrange
+
 
 from django.utils import timezone
 from django.shortcuts import render, redirect
@@ -143,7 +145,43 @@ def profile(request, pk):
 
 
 def timesheet(request):
-    return render(request, 'users/timesheet.html')
+    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+    year = datee.year
+    month = datee.month
+
+    a = monthrange(year, month)
+    t = []
+
+    for i in range(1, a[1]+1):
+        try:
+            list = TimeSheet.objects.get(user=request.user, day=i)
+            t.append(
+                {
+                    'day' : i, 
+                    'month': month, 
+                    'year': year, 
+                    'checkout': list.checkout, 
+                    'checkin': list.checkin,
+                    'time': strftime("%H:%M", gmtime(list.time)),
+                }
+            )
+        except:
+            t.append(
+                {
+                    'day' : i, 
+                    'month': month, 
+                    'year': year, 
+                    'checkout': 0, 
+                    'checkin': 0,
+                    'time': 0,
+                }
+            )
+    print(t)
+
+    context = {
+        't': t,
+    }
+    return render(request, 'users/timesheet.html', context)
 
 @login_required
 def checkin(request):

@@ -51,6 +51,7 @@ class Profile(models.Model):
 
 class TimeSheet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    
     year = models.IntegerField(blank=True, null=True)
     month = models.IntegerField(blank=True, null=True)
     day = models.IntegerField(blank=True, null=True)
