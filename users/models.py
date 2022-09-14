@@ -50,7 +50,7 @@ class Profile(models.Model):
 
 
 class TimeSheet(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     year = models.IntegerField(blank=True, null=True)
     month = models.IntegerField(blank=True, null=True)
     day = models.IntegerField(blank=True, null=True)
@@ -60,7 +60,7 @@ class TimeSheet(models.Model):
     time = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return f"timesheet of user: {self.user.username}"
+        return f"timesheet of user: {self.user.username} at {self.day}-{self.month}-{self.year}"
 
     def save(self, *args, **kwargs):
         datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")

@@ -159,7 +159,11 @@ def checkin(request):
 
 @login_required
 def checkout(request):
-    timesheet = TimeSheet.objects.get(user=request.user)
+    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f%z")
+    year = datee.year
+    month = datee.month
+    day = datee.day
+    timesheet = TimeSheet.objects.get(user=request.user, year=year, month=month, day=day)
     timesheet.checkout = timezone.now()
     timesheet.time = (timesheet.checkout - timesheet.checkin).seconds
     timesheet.save()
