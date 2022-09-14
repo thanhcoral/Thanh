@@ -253,4 +253,51 @@ def export_salary(request, pk):
     print(salary)
     return redirect('/timesheet')
 
+def manage_timesheet(request):
+    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
+    year = datee.year
+    month = datee.month
+    # day = datee.day
 
+    a = monthrange(year, month)
+
+    users = User.objects.all()
+
+    all_timeline = []
+
+    for user in users:
+        timeline = []
+        for day in range(1, a[1]+1):
+            try:
+                timesheet = TimeSheet.objects.get(user=user, day=day, month=month)
+                w_time = strftime("%H:%M", gmtime(timesheet.time))
+            except:
+                w_time = ''
+            timeline.append(
+                {
+                    'day': day,
+                    'w_time': w_time
+                }
+            )
+        all_timeline.append(
+            {
+                'user': user,
+                'timeline': timeline,
+            }
+        )
+
+    tl = []
+    for day in range(1, a[1]+1):
+        tl.append(
+            {
+                'day': day,
+            }
+        )
+
+    context = {
+        'timeline': tl,
+        'all_timeline': all_timeline,
+        'users': User.objects.all()
+    }
+
+    return render (request, 'users/manage-timesheet.html', context)
