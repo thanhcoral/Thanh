@@ -191,7 +191,6 @@ def checkin(request):
 @login_required
 def checkout(request):
     year, month, day = get_time_now()
-    print(year)
     try:
         timesheet = TimeSheet.objects.get(user=request.user, year=year, month=month, day=day)
     except:
