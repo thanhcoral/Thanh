@@ -21,29 +21,57 @@
   <div class="container-fluid p-3 my-1">
     <div class="row">
       <div class="col-md-12">
-        <nav class="navbar navbar-expand-md navbar-light mb-4" style="background-color: #f0f5f5">
-          <a href="/" class="navbar-brand">Home</a>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark" style="font-weight: 800;">
+          <a href="/" class="navbar-brand" style="color: white;">Home</a>
             <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
               <div class="navbar-nav ml-auto">
                 {% if request.user|has_group:"HR" or request.user.is_superuser %} 
-                <a href="{% url 'manage-timesheet' %}" class="nav-item nav-link">Mangage Timesheet</a>
-                <a href="{% url 'pdf' %}" class="nav-item nav-link">PDF</a>
+                <a href="#" onclick="human_resource()" class="nav-item nav-link">Human Resource</a>
                 {% endif %}
                 {% if user.is_authenticated %}
-                <a href="{% url 'timesheet' %}" class="nav-item nav-link">Timesheet</a>
-                <a href="{% url 'users-list' %}" class="nav-item nav-link">Users</a>
                 <span class="mx-1 my-auto">|</span>
-                  <a href="#" class="nav-item nav-link">{{user.username}}</a>
-                  <a href="{% url 'logout' %}" class="nav-item nav-link">Logout</a>
+                <a href="#" onclick="personal_func()" class="nav-item nav-link">{{user.username}}</a>
+                <a href="{% url 'logout' %}" class="nav-item nav-link">Logout</a>
                 {% else %}
                   <a href="{% url 'login' %}" class="nav-item nav-link">Sign in</a>
-                {% endif %}
+                  {% endif %}
+                </div>
               </div>
-            </div>
-        </nav>
+            </nav>
+            <hr style="padding: 0; margin: 0;"/>
+            <nav id="human_resource" class="navbar navbar-expand-md navbar-dark" style="background-color: #666666; display: none; font-weight: 500">
+              <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ml-auto">
+                  {% if request.user|has_group:"HR" or request.user.is_superuser %} 
+                  <div style="display: flex;">
+                    <a href="{% url 'users-list' %}" class="nav-item nav-link">Users</a>
+                    <a href="{% url 'manage-timesheet' %}" class="nav-item nav-link">Mangage Timesheet</a>
+                    <a href="{% url 'pdf' %}" class="nav-item nav-link">PDF</a>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </nav>
+            <nav id="personal_func" class="navbar navbar-expand-md navbar-dark" style="background-color: #666666; display: none; font-weight: 500">
+              <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav ml-auto">
+                  {% if request.user|has_group:"HR" or request.user.is_superuser %} 
+                  <div style="display: flex;">
+                    <a href="{% url 'timesheet' %}" class="nav-item nav-link">Timesheet</a>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+          </nav>
         <!--Any flash messages pop up in any page because this is the base template-->
         {% if messages %}
           <div class="alert alert-dismissible" role="alert">
@@ -55,10 +83,30 @@
             </button>
           </div>
         {% endif %}
+        <div class="mt-5"></div>
         {% block content %}{% endblock %}
       </div>
     </div>
   </div>
+  
+  <script>
+    function human_resource() {
+      var x = document.getElementById("human_resource");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+    }
+    function personal_func() {
+      var x = document.getElementById("personal_func");
+      if (x.style.display === "none") {
+        x.style.display = "block";
+      } else {
+        x.style.display = "none";
+      }
+    }
+  </script>
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
