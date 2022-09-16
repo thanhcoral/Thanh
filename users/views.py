@@ -360,7 +360,7 @@ class GeneratePdf(View):
             'users': User.objects.all()
         }
         # data = models.User.objects.all()
-        open('templates/temp.html', "w").write(render_to_string('pdf/report-timesheet.html', {'data': data}))
+        open('templates/temp.html', "w").write(render_to_string('reports/timesheet.html', {'data': data}))
 
         # Converting the HTML template into a PDF file
         pdf = html_to_pdf('temp.html')
