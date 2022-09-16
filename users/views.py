@@ -223,10 +223,10 @@ def checkout(request):
     checkin = timesheet.checkin
     checkout = timesheet.checkout
 
-    if (checkin - datetime.datetime(2022,9,14,8,0,0,0)).days > 0 :
+    if (checkin - datetime.datetime(year,month,day,8,0,0,0)).days > 0 :
         timesheet.late = (checkin - datetime.datetime(2022,9,14,8,0,0,0)).seconds
 
-    if (datetime.datetime(2022,9,14,17,0,0,0) - checkout).days < 0:
+    if (datetime.datetime(year,month,day,17,0,0,0) - checkout).days < 0:
         timesheet.ot = (checkout - datetime.datetime(2022,9,14,17,0,0,0)).seconds
 
     list = TimeSheet.objects.filter(user=request.user, month=9)

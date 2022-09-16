@@ -44,6 +44,14 @@ class Profile(models.Model):
     gender = models.CharField(_("gender"), max_length=100, blank=True, choices=GENDER_CHOICES)
     address = models.CharField(_("address"), max_length=100, blank=True)
     birthday = models.DateField(_("birthday"), max_length=10, blank=True, null=True)
+    
+    age = models.IntegerField(_("age"), max_length=100, blank=True, null=True)
+    citizen_identification = models.CharField(_("citizen identification"), max_length=100, blank=True, null=True)
+    tax_code = models.CharField(_("tax code"), max_length=100, blank=True, null=True)
+    degree = models.CharField(_("degree"), max_length=100, blank=True, null=True)
+    certificate = models.CharField(_("certificate"), max_length=100, blank=True, null=True)
+    marital_status = models.CharField(_("marital_status"), max_length=100, blank=True, null=True)
+    license_plates = models.CharField(_("license_plates"), max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Profile of {self.user.username}"
