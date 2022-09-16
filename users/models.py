@@ -6,6 +6,8 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from common.utils import get_time_now
+
 
 GENDER_CHOICES = (
     ('Male', 'Male'),
@@ -15,8 +17,6 @@ GENDER_CHOICES = (
 
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(_("username"), max_length=100, unique=True, validators=[UnicodeUsernameValidator()], error_messages={"unique": _("A user with that username already exists."),})
-    first_name = models.CharField(_("first name"), max_length=100, blank=True)
-    last_name = models.CharField(_("last name"), max_length=100, blank=True)    # Surname
     email = models.EmailField(_("email address"), blank=True)
     is_staff = models.BooleanField(_("staff status"), default=False,)
     is_active = models.BooleanField(_("active"), default=True)
@@ -33,19 +33,20 @@ class User(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = _("users")
 
     def __str__(self):
-        if self.last_name == "" and self.first_name == "":
+        if self.profile.last_name == "" and self.profile.first_name == "":
             return self.username
-        return f"{self.last_name} {self.first_name}"
+        return f"{self.profile.last_name} {self.profile.first_name}"
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    avatar = models.ImageField(default='images/avatar_default.jpg', upload_to='images')
-    gender = models.CharField(_("gender"), max_length=100, blank=True, choices=GENDER_CHOICES)
-    address = models.CharField(_("address"), max_length=100, blank=True)
+    first_name = models.CharField(_("first name"), max_length=100, blank=True)
+    last_name = models.CharField(_("last name"), max_length=100, blank=True)    # Surname
     birthday = models.DateField(_("birthday"), max_length=10, blank=True, null=True)
-    
-    age = models.IntegerField(_("age"), max_length=100, blank=True, null=True)
+    gender = models.CharField(_("gender"), max_length=100, blank=True, choices=GENDER_CHOICES)
+    age = models.IntegerField(_("age"), blank=True, null=True)
+    address = models.CharField(_("address"), max_length=100, blank=True)
+    avatar = models.ImageField(default='images/avatar_default.jpg', upload_to='images')
     citizen_identification = models.CharField(_("citizen identification"), max_length=100, blank=True, null=True)
     tax_code = models.CharField(_("tax code"), max_length=100, blank=True, null=True)
     degree = models.CharField(_("degree"), max_length=100, blank=True, null=True)
@@ -74,10 +75,7 @@ class TimeSheet(models.Model):
         return f"timesheet of user: {self.user.username} at {self.day}-{self.month}-{self.year}"
 
     def save(self, *args, **kwargs):
-        datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
-        self.year = datee.year
-        self.month = datee.month
-        self.day = datee.day
+        self.year, self.month, self.day = get_time_now()
         return super().save(*args, **kwargs)
 
 
@@ -93,8 +91,7 @@ class Salary(models.Model):
         return f"salary of user: {self.user.username} at month: {self.month}"
 
     def save(self, *args, **kwarngs):
-        datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
-        self.month = datee.month
+        tmp, self.month, tmp = get_time_now()
         list = TimeSheet.objects.filter(user=self.user, month=self.month)
         total = 0
         for li in list:

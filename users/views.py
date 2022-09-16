@@ -17,6 +17,7 @@ from users.forms import RegisterForm, LoginForm, AddUserForm, UpdateProfileForm,
 from users.models import Salary, TimeSheet, User
 
 from common.authorization import group_required, lv
+from common.utils import get_time_now
 
 @login_required
 def home(request):
@@ -145,41 +146,30 @@ def profile(request, pk):
 
 @login_required
 def timesheet(request):
-    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
-    year = datee.year
-    month = datee.month
+    year, month, tmp = get_time_now()
 
-    a = monthrange(year, month)
+    all_days = monthrange(year, month)
     t = []
 
-    for i in range(1, a[1]+1):
+    for day in range(1, all_days[1]+1):
         try:
-            list = TimeSheet.objects.get(user=request.user, day=i)
+            list = TimeSheet.objects.get(user=request.user, day=day)
             checkout = list.checkout.time if (list.checkout is not None) else ''
             late = '' if (list.late == 0) else strftime("%H:%M", gmtime(list.late))
             ot = '' if (list.ot == 0) else strftime("%H:%M", gmtime(list.ot))
             
-            t.append(
-                {
-                    'day' : i, 
-                    'month': month, 
-                    'year': year, 
-                    'checkin': list.checkin.time,
-                    'checkout': checkout, 
-                    'late': late, 
-                    'ot': ot, 
-                    'time': strftime("%H:%M", gmtime(list.time)),
-                }
-            )
+            t.append({
+                'day' : day, 
+                'month': month, 
+                'year': year, 
+                'checkin': list.checkin.time,
+                'checkout': checkout, 
+                'late': late, 
+                'ot': ot, 
+                'time': strftime("%H:%M", gmtime(list.time)),
+            })
         except:
-            t.append(
-                {
-                    'day' : i, 
-                    'month': month, 
-                    'year': year, 
-                }
-            )
-    # print(t)
+            t.append({'day' : day, 'month': month, 'year': year, })
 
     try:
         salary = Salary.objects.get(user=request.user, month=month)
@@ -194,22 +184,14 @@ def timesheet(request):
 
 @login_required
 def checkin(request):
-    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
-    year = datee.year
-    month = datee.month
-    day = datee.day
-    # TimeSheet.objects.create(user=request.user)
-    timesheet = TimeSheet.objects.get_or_create(user=request.user, year=year, month=month, day=day)
-    # timesheet.checkin = str(timezone.now())
-    # print(colored(timezone.now(), 'blue'))
+    year, month, day = get_time_now()
+    TimeSheet.objects.get_or_create(user=request.user, year=year, month=month, day=day)
     return redirect('/timesheet')
 
 @login_required
 def checkout(request):
-    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
-    year = datee.year
-    month = datee.month
-    day = datee.day
+    year, month, day = get_time_now()
+    print(year)
     try:
         timesheet = TimeSheet.objects.get(user=request.user, year=year, month=month, day=day)
     except:
@@ -224,15 +206,12 @@ def checkout(request):
     checkout = timesheet.checkout
 
     if (checkin - datetime.datetime(year,month,day,8,0,0,0)).days > 0 :
-        timesheet.late = (checkin - datetime.datetime(2022,9,14,8,0,0,0)).seconds
+        timesheet.late = (checkin - datetime.datetime(year,month,day,8,0,0,0)).seconds
 
     if (datetime.datetime(year,month,day,17,0,0,0) - checkout).days < 0:
-        timesheet.ot = (checkout - datetime.datetime(2022,9,14,17,0,0,0)).seconds
-
-    list = TimeSheet.objects.filter(user=request.user, month=9)
+        timesheet.ot = (checkout - datetime.datetime(year,month,day,17,0,0,0)).seconds
 
     a = range(1, monthrange(year, month)[1]+1) 
-    print(a[-1])
     if (day == a[-1]):
         try:
             salary = Salary.objects.get(user=request.user)
@@ -254,10 +233,7 @@ def export_salary(request, pk):
     return redirect('/timesheet')
 
 def manage_timesheet(request):
-    datee =datetime.datetime.strptime(str(timezone.now()), "%Y-%m-%d %H:%M:%S.%f")
-    year = datee.year
-    month = datee.month
-    # day = datee.day
+    year, month, tmp = get_time_now()
 
     a = monthrange(year, month)
 
@@ -288,11 +264,7 @@ def manage_timesheet(request):
 
     tl = []
     for day in range(1, a[1]+1):
-        tl.append(
-            {
-                'day': day,
-            }
-        )
+        tl.append({'day': day,})
 
     context = {
         'timeline': tl,

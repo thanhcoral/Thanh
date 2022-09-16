@@ -10,19 +10,19 @@ class UserAdmin(UserAdmin):
     fieldsets = (
         (None, {
             # 'fields': ('username', 'password', 'email', 'first_name', 'last_name', 'is_active', 'is_superuser', 'is_staff', 'user_permissions', 'groups', )
-            'fields': ('username', 'password', 'email', 'first_name', 'last_name', 'is_staff', 'groups')
+            'fields': ('username', 'password', 'email', 'is_staff', 'groups')
         }),
         ('Advanced options', {
             'classes': ('collapse',),
             'fields': ('user_permissions', 'is_active', 'is_superuser', )
         }),
     )
-    list_display = ('username', 'first_name', 'last_name', 'email', )
+    list_display = ('username', 'email', )
     list_filter = ('is_staff', 'is_active', )
     search_fields = ('last_name__startswith', )
 
     class Meta:
-        ordering = ('last_name', 'first_name', 'date_joined', )
+        ordering = ('date_joined', )
 
 admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Profile)
