@@ -181,7 +181,10 @@ def timesheet(request):
             )
     # print(t)
 
-    salary = Salary.objects.get(user=request.user, month=month)
+    try:
+        salary = Salary.objects.get(user=request.user, month=month)
+    except:
+        salary = ''
 
     context = {
         't': t,
@@ -227,7 +230,17 @@ def checkout(request):
         timesheet.ot = (checkout - datetime.datetime(2022,9,14,17,0,0,0)).seconds
 
     list = TimeSheet.objects.filter(user=request.user, month=9)
-    print(list)
+
+    a = range(1, monthrange(year, month)[1]+1) 
+    print(a[-1])
+    if (day == a[-1]):
+        try:
+            salary = Salary.objects.get(user=request.user)
+        except:
+            pass
+        if (salary is not None):
+            Salary.objects.filter(user=request.user).delete()
+        Salary.objects.create(user=request.user)
     
     timesheet.time = (checkout - checkin).seconds
     timesheet.save()
