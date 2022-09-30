@@ -216,10 +216,8 @@ def checkout(request):
         try:
             salary = Salary.objects.get(user=request.user)
         except:
-            pass
-        if (salary is not None):
             Salary.objects.filter(user=request.user).delete()
-        Salary.objects.create(user=request.user)
+            Salary.objects.create(user=request.user)
     
     timesheet.time = (checkout - checkin).seconds
     timesheet.save()
